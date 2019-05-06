@@ -32,7 +32,7 @@ def upload_file():
         json.dump(json_content, outfile)
 
     return json.dumps({
-        'filename': sha1_hash + 'json'
+        'filename': sha1_hash + '.json'
     })
 
 
