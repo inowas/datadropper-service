@@ -21,7 +21,7 @@ def upload_file():
     if json_content is None:
         return 'Content is not valid, a valid json expected'
 
-    sha1_hash = hashlib.sha1(json_content.encode("utf-8")).hexdigest()
+    sha1_hash = hashlib.sha1(json.dumps(json_content).encode("utf-8")).hexdigest()
 
     filename = os.path.join(
         app.config['UPLOAD_FOLDER'],
