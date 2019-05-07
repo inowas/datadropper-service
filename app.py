@@ -45,7 +45,7 @@ def get_file(filename):
     )
 
     if not os.path.exists(file):
-        abort(404)
+        abort(404, 'File with filename "{}" not found.'.format(filename))
 
     with open(file) as json_file:
         data = json.load(json_file)
