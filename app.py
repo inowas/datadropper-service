@@ -15,11 +15,11 @@ CORS(app)
 @cross_origin()
 def upload_file():
     if 'application/json' not in request.content_type:
-        return 'Content type is not valid, "application/json" expected'
+        abort(415, 'Invalid content type, "application/json" expected')
 
     json_content = request.get_json(force=True)
     if json_content is None:
-        return 'Content is not valid, a valid json expected'
+        abort(415, 'Content is not valid, a valid json expected')
 
     sha1_hash = hashlib.sha1(json.dumps(json_content).encode("utf-8")).hexdigest()
 
