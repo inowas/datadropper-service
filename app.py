@@ -1,9 +1,8 @@
 import os
-from flask import Flask, request, abort
+from flask import Flask, request, abort, json
 from flask_cors import CORS, cross_origin
 
 import hashlib
-import json
 
 UPLOAD_FOLDER = '/data'
 
@@ -31,9 +30,16 @@ def upload_file():
     with open(filename, 'w') as outfile:
         json.dump(json_content, outfile)
 
-    return json.dumps({
+    data = {
         'filename': sha1_hash + '.json'
-    })
+    }
+
+    response = app.response_class(
+        response=json.dumps(data),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
 
 
 @app.route('/<filename>', methods=['GET'])
@@ -49,7 +55,12 @@ def get_file(filename):
 
     with open(file) as json_file:
         data = json.load(json_file)
-        return json.dumps(data)
+        response = app.response_class(
+            response=json.dumps(data),
+            status=200,
+            mimetype='application/json'
+        )
+        return response
 
 
 if __name__ == '__main__':
