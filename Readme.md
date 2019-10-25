@@ -7,7 +7,7 @@ you can retrieve the data by making a GET-Request to the service.
 ## Store Data (with [httpie](https://httpie.org/))
 
 ```
-http --json POST <url> http --json --verbose POST 'https://datadropper.inowas.com' data='{["timeStamp": 1, "value": 10]}'
+http --json POST <url> http --json --verbose POST 'https://<url>' data='{["timeStamp": 1, "value": 10]}'
 
 POST / HTTP/1.1
 Accept: application/json, */*
