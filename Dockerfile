@@ -1,10 +1,9 @@
-FROM python:3.7.2-stretch
+FROM python:3.11-slim-buster
+
+MAINTAINER Ralf Junghanns <ralf.junghanns@tu-dresden.de>
 
 COPY . /app
-
 WORKDIR /app
 
 # Install the requirements
 RUN pip install -r ./requirements.txt
-
-CMD ["python", "app.py"]

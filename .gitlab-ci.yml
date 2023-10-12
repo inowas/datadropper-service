@@ -1,0 +1,52 @@
+image: docker:20.10.16
+
+stages:
+  - build
+  - deploy
+
+services:
+  - docker:20.10.16-dind
+
+variables:
+  # Use TLS https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#tls-enabled
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_CERTDIR: "/certs"
+
+build:production:
+  stage: build
+  before_script:
+    - docker info
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_TOKEN $CI_REGISTRY
+  script:
+    - docker build --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker push $CI_REGISTRY_IMAGE:latest
+  only:
+    - dev
+
+deploy:production:
+  stage: deploy
+  before_script:
+    - docker info
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_TOKEN $CI_REGISTRY
+  dependencies:
+    - build:production
+  environment:
+    name: production
+    url: https://datadropper.inowas.com
+  script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | ssh-add -
+    - mkdir -p ~/.ssh
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - scp docker-compose.yml $PROD_SERVER_SSH_CREDENTIALS:$PROD_SERVER_PATH/docker-compose.yml
+    - ssh -t $PROD_SERVER_SSH_CREDENTIALS "cd $PROD_SERVER_PATH &&
+      docker compose down &&
+      docker compose pull &&
+      docker compose up -d --force-recreate &&
+      docker compose ps &&
+      docker system prune -f"
+
+  only:
+    - dev
