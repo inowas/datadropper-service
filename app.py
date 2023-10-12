@@ -62,15 +62,14 @@ def get_file(filename):
         )
         return response
 
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+app.secret_key = '2349978342978342907889709154089438989043049835891'
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.debug = True
 
 if __name__ == '__main__':
-
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.makedirs(UPLOAD_FOLDER)
-
-    app.secret_key = '2349978342978342907889709154089438989043049835891'
-    app.config['SESSION_TYPE'] = 'filesystem'
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-    app.debug = True
-
-    app.run(debug=True, host='0.0.0.0')
+    app.config['DEBUG'] = True
+    app.run(debug=app.config['DEBUG'], host='0.0.0.0')
